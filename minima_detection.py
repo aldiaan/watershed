@@ -42,18 +42,14 @@ def get_neighbours(matrix, index):
     ret = []
     row, col = index[0], index[1]
 
-    y_min = row - 1 if row - 1 >= 0 else 0
-    y_max = row + 1 if row + 1 < matrix.shape[0] else row
-
-    x_min = col - 1 if col - 1 >= 0 else 0
-    x_max = col + 1 if col + 1 < matrix.shape[1] else col
-
-    for i in range(y_min, y_max + 1):
-        for j in range(x_min, x_max + 1):
-            if i == row and j == col:
-                continue
-            else:
-                ret.append((i, j))   
+    if row - 1 >= 0:
+        ret.append((row-1, col))
+    if row + 1 < matrix.shape[0]:
+        ret.append((row+1, col))
+    if col + 1 < matrix.shape[1]:
+        ret.append((row, col + 1))
+    if col - 1 >= 0:
+        ret.append((row, col-1))
 
     return ret
 
@@ -76,13 +72,12 @@ for pixel in sorted(pixel_groups.keys()):
     for p in [x for x in pixel_groups[pixel] if lab[x] == INIT]:
         lab[p] = curlab
         fifo.add(p)
-    while not fifo.isempty():
-        s = fifo.remove()
-        for q in [x for x in get_neighbours(img, s) if img[s] == img[x]]:
-            if lab[q] == INIT:
-                lab[q] = curlab
-                fifo.add(q)
-    curlab += 1
-    # print(lab)    
+        while not fifo.isempty():
+            s = fifo.remove()                      
+            for q in [x for x in get_neighbours(img, s) if img[s] == img[x]]:
+                if lab[q] == INIT:
+                    lab[q] = curlab
+                    fifo.add(q)
+    curlab += 1   
 
 print(lab)
